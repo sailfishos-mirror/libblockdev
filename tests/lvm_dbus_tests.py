@@ -47,6 +47,19 @@ class LvmNoDevTestCase(_lvm_cases.LvmNoDevTestCase, LvmDBusTestCase):
         self.assertEqual(BlockDev.get_plugin_soname(BlockDev.Plugin.LVM), "libbd_lvm-dbus.so.3")
 
     @tag_test(TestTags.NOSTORAGE)
+    def test_empty_device(self):
+        """Verify that passing an empty device string returns a proper error"""
+
+        with self.assertRaisesRegex(GLib.GError, "Invalid LVM ID specified"):
+            BlockDev.lvm_pvcreate("", 0, 0, None)
+
+        with self.assertRaisesRegex(GLib.GError, "Invalid LVM ID specified"):
+            BlockDev.lvm_pvresize("", 0, None)
+
+        with self.assertRaisesRegex(GLib.GError, "Invalid LVM ID specified"):
+            BlockDev.lvm_vgremove("", None)
+
+    @tag_test(TestTags.NOSTORAGE)
     def test_tech_available(self):
         """Verify that checking lvm dbus availability by technology works as expected"""
 
