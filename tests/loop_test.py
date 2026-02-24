@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 import overrides_hack
 
@@ -141,6 +142,17 @@ class LoopTestSetupSectorSize(LoopTestCase):
         # logical_block_size should be 4096
         with open("/sys/block/%s/queue/logical_block_size" % self.loop, "r") as f:
             self.assertEqual(f.read().strip(), "4096")
+
+        succ = BlockDev.loop_teardown(self.loop)
+        self.assertTrue(succ)
+
+        # invalid sector size -- setup should fail, make sure we also removed the loop device after
+        with self.assertRaisesRegex(GLib.GError, "Failed to set sector size"):
+            BlockDev.loop_setup(self.dev_file, sector_size=7)
+
+        time.sleep(2)
+        loop_name = BlockDev.loop_get_loop_name(self.dev_file)
+        self.assertIsNone(loop_name)
 
 
 class LoopTestSetupPartprobe(LoopTestCase):

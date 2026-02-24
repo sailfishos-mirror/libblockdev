@@ -372,6 +372,9 @@ gboolean bd_loop_setup_from_fd (gint fd, guint64 offset, guint64 size, gboolean 
     if (status != 0) {
         g_set_error (&l_error, BD_LOOP_ERROR, BD_LOOP_ERROR_FAIL,
                      "Failed to set status for the %s device: %m", loop_device);
+        if (ioctl (loop_fd, LOOP_CLR_FD) < 0)
+            bd_utils_log_format (BD_UTILS_LOG_WARNING,
+                                 "Failed to clear the %s device: %m", loop_device);
         g_free (loop_device);
         close (loop_fd);
         bd_utils_report_finished (progress_id, l_error->message);
@@ -391,6 +394,9 @@ gboolean bd_loop_setup_from_fd (gint fd, guint64 offset, guint64 size, gboolean 
         if (status != 0) {
             g_set_error (&l_error, BD_LOOP_ERROR, BD_LOOP_ERROR_FAIL,
                          "Failed to set sector size for the %s device: %m", loop_device);
+            if (ioctl (loop_fd, LOOP_CLR_FD) < 0)
+                bd_utils_log_format (BD_UTILS_LOG_WARNING,
+                                     "Failed to clear the %s device: %m", loop_device);
             g_free (loop_device);
             close (loop_fd);
             bd_utils_report_finished (progress_id, l_error->message);
