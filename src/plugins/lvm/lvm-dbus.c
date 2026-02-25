@@ -438,6 +438,12 @@ static gchar* get_object_path (const gchar *obj_id, GError **error) {
     GVariant *ret = NULL;
     gchar *obj_path = NULL;
 
+    if (!obj_id || g_strcmp0 (obj_id, "") == 0) {
+        g_set_error (error, BD_LVM_ERROR, BD_LVM_ERROR_NOEXIST,
+                     "Invalid LVM ID specified");
+        return NULL;
+    }
+
     args = g_variant_new ("(s)", obj_id);
     /* consumes (frees) the 'args' parameter */
     ret = g_dbus_connection_call_sync (bus, LVM_BUS_NAME, MANAGER_OBJ, MANAGER_INTF,
@@ -954,6 +960,12 @@ static GVariant* get_lvm_object_properties (const gchar *obj_id, const gchar *if
 static GVariant* get_pv_properties (const gchar *pv_name, GError **error) {
     gchar *obj_id = NULL;
     GVariant *ret = NULL;
+
+    if (!pv_name || g_strcmp0 (pv_name, "") == 0) {
+        g_set_error (error, BD_LVM_ERROR, BD_LVM_ERROR_NOEXIST,
+                     "Invalid LVM ID specified");
+        return NULL;
+    }
 
     if (!g_str_has_prefix (pv_name, "/dev/")) {
         obj_id = g_strdup_printf ("/dev/%s", pv_name);
@@ -1523,6 +1535,12 @@ gboolean bd_lvm_pvcreate (const gchar *device, guint64 data_alignment, guint64 m
     GVariant *params = NULL;
     GVariant *extra_params = NULL;
 
+    if (!device || g_strcmp0 (device, "") == 0) {
+        g_set_error (error, BD_LVM_ERROR, BD_LVM_ERROR_NOEXIST,
+                     "Invalid LVM ID specified");
+        return FALSE;
+    }
+
     if (data_alignment != 0 || metadata_size != 0) {
         g_variant_builder_init (&builder, G_VARIANT_TYPE_DICTIONARY);
         if (data_alignment != 0) {
@@ -1585,6 +1603,12 @@ gboolean bd_lvm_pvremove (const gchar *device, const BDExtraArg **extra, GError 
     GVariant *params = NULL;
     GError *l_error = NULL;
     gboolean ret = FALSE;
+
+    if (!device || g_strcmp0 (device, "") == 0) {
+        g_set_error (error, BD_LVM_ERROR, BD_LVM_ERROR_NOEXIST,
+                     "Invalid LVM ID specified");
+        return FALSE;
+    }
 
     if (access (device, F_OK) != 0) {
         g_set_error (error, BD_LVM_ERROR, BD_LVM_ERROR_NOEXIST,
