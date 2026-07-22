@@ -53,9 +53,9 @@ static void utils_kmod_log_redirect (void *log_data G_GNUC_UNUSED, int priority,
     }
 
 #ifdef DEBUG
-    message = g_strdup_printf ("[libmkod] %s:%d %s() %s", file, line, fn, kmod_msg);
+    message = g_strdup_printf ("[libkmod] %s:%d %s() %s", file, line, fn, kmod_msg);
 #else
-    message = g_strdup_printf ("[libmkod] %s", kmod_msg);
+    message = g_strdup_printf ("[libkmod] %s", kmod_msg);
 #endif
     bd_utils_log (priority, message);
 
